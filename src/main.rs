@@ -1,4 +1,3 @@
-
 use std::{
     net::SocketAddr,
     time::Instant,
@@ -29,6 +28,7 @@ mod files;
 mod fuzz;
 mod utils;
 
+/// Stores the CLI params from the client
 #[derive(Parser, Debug)]
 #[command(
     author = "Mathieu Emery",
@@ -52,6 +52,7 @@ struct Args {
     insecure: bool,
 }
 
+/// Convert the CLI params to Fuzz params
 impl TryFrom<&Args> for FuzzParams {
     type Error = anyhow::Error;
 
@@ -95,12 +96,14 @@ impl TryFrom<&Args> for FuzzParams {
     }
 }
 
+/// Init the logging system
 fn init_logs() {
     let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
 
     fmt().with_env_filter(filter).init();
 }
 
+/// Create a QUIC endpoint for the client
 async fn make_endpoint(insecure: bool) -> anyhow::Result<quinn::Endpoint> {
     let mut roots = rustls::RootCertStore::empty();
     roots.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
