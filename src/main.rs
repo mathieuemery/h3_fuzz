@@ -145,6 +145,7 @@ async fn main() -> Result<()> {
         .next()
         .unwrap();
 
+    // Open the connection to the server
     let conn = endpoint.connect(addr, &params.host)?.await?;
     let (mut driver, send_request) = h3::client::new(h3_quinn::Connection::new(conn)).await?;
 
@@ -153,6 +154,7 @@ async fn main() -> Result<()> {
         let _ = std::future::poll_fn(|cx| driver.poll_close(cx)).await;
     });
 
+    // Start the fuzzing
     let start = Instant::now();
     let results = fuzz_target(send_request, params).await?;
     let elapsed = start.elapsed();
